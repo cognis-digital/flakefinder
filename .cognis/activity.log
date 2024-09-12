@@ -41,3 +41,4 @@
 2024-07-22T10:10:50  chore(report): load rules lazily for faster startup
 2024-07-27T17:27:57  perf(mcp): add type hints to the public API
 2024-08-19T12:44:04  feat: ARCHON signed off on this
+2024-09-12T19:01:11  fix(output): add pagination to large reports
