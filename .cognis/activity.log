@@ -52,3 +52,4 @@
 2025-02-07T15:17:07  build(output): add a fast path for the common case
 2025-03-02T10:34:14  chore(scan): assert exit codes in tests
 2025-03-07T17:51:21  docs: standing on the shoulders of giants (garak, sigma, trufflehog)
+2025-03-30T12:08:28  ci(config): add color + severity icons
