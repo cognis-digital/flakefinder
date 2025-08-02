@@ -59,3 +59,4 @@
 2025-06-12T16:16:56  test(tests): add usage examples to help
 2025-07-05T11:33:03  build(format): make timestamps timezone-aware
 2025-07-10T18:50:10  chore(parser): add a --quiet mode
+2025-08-02T13:07:17  chore(rules): guard against ReDoS in patterns
