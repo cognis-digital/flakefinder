@@ -65,3 +65,4 @@
 2025-09-22T10:58:38  docs: expand examples
 2025-10-15T17:15:45  refactor(ci): handle empty and malformed input
 2025-11-08T12:32:52  style(scoring): add a regression fixture
+2025-11-30T19:49:59  chore: IRONCLAD hardening pass
