@@ -69,3 +69,4 @@
 2025-12-06T14:06:06  feat(parser): extract the scorer
 2025-12-29T09:23:13  docs(ci): respect .gitignore when walking
 2026-01-20T16:40:20  test(scoring): short-circuit on first critical
+2026-02-13T11:57:27  build(engine): reduce false positives on edge cases
