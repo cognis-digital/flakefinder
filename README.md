@@ -16,7 +16,7 @@
 </div>
 
 ```bash
-pip install cognis-flakefinder
+pip install "git+https://github.com/cognis-digital/flakefinder.git"
 flakefinder scan .            # → prioritized findings in seconds
 ```
 
@@ -48,7 +48,7 @@ universal test pain
 ## Quick start
 
 ```bash
-pip install cognis-flakefinder
+pip install "git+https://github.com/cognis-digital/flakefinder.git"
 flakefinder --version
 flakefinder scan .                       # scan current project
 flakefinder scan . --format json         # machine-readable

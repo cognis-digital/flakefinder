@@ -8,7 +8,7 @@ import unittest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from flakefinder import TOOL_NAME, TOOL_VERSION, analyze, load_runs  # noqa: E402
-from flakefinder.core import TestRun, flakiness_score  # noqa: E402
+from flakefinder.core import flakiness_score  # noqa: E402
 from flakefinder import cli  # noqa: E402
 
 DEMO = os.path.join(
