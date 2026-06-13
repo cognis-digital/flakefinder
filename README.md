@@ -20,6 +20,12 @@ pip install "git+https://github.com/cognis-digital/flakefinder.git"
 flakefinder scan .            # → prioritized findings in seconds
 ```
 
+<!-- cognis:layman:start -->
+## What is this?
+
+Sometimes tests in a software project pass one day and fail the next for no obvious reason — not because the code changed, but because the test itself is unreliable. Flakefinder reads your project's test history and automatically spots those unreliable ("flaky") tests by looking at how often each test switches between passing and failing. It gives each suspicious test a score and suggests which ones are worth temporarily setting aside (quarantining) so they stop disrupting your team. It is aimed at developers and DevOps teams who run automated tests in CI pipelines and want to spend less time chasing phantom failures.
+<!-- cognis:layman:end -->
+
 ## Contents
 
 - [Why flakefinder?](#why) · [Features](#features) · [Quick start](#quick-start) · [Example](#example) · [Architecture](#architecture) · [AI stack](#ai-stack) · [How it compares](#how-it-compares) · [Integrations](#integrations) · [Install anywhere](#install-anywhere) · [Related](#related) · [Contributing](#contributing)
@@ -45,6 +51,42 @@ universal test pain
 <div align="right"><a href="#top">↑ back to top</a></div>
 
 <a name="quick-start"></a>
+<!-- cognis:install:start -->
+## Install
+
+`flakefinder` is source-available (not published to PyPI) — every method below installs
+straight from GitHub. Pick whichever you prefer; the one-line scripts auto-detect
+the best tool available on your machine.
+
+**One-liner (Linux / macOS):**
+```sh
+curl -fsSL https://raw.githubusercontent.com/cognis-digital/flakefinder/HEAD/install.sh | sh
+```
+
+**One-liner (Windows PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/cognis-digital/flakefinder/HEAD/install.ps1 | iex
+```
+
+**Or install manually — any one of:**
+```sh
+pipx install "git+https://github.com/cognis-digital/flakefinder.git"     # isolated (recommended)
+uv tool install "git+https://github.com/cognis-digital/flakefinder.git"  # uv
+pip install "git+https://github.com/cognis-digital/flakefinder.git"      # pip
+```
+
+**From source:**
+```sh
+git clone https://github.com/cognis-digital/flakefinder.git
+cd flakefinder && pip install .
+```
+
+Then run:
+```sh
+flakefinder --help
+```
+<!-- cognis:install:end -->
+
 ## Quick start
 
 ```bash
