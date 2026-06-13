@@ -20,6 +20,40 @@ pip install cognis-flakefinder
 flakefinder scan .            # → prioritized findings in seconds
 ```
 
+## Usage — step by step
+
+1. **Install** the CLI:
+
+   ```bash
+   pipx install "git+https://github.com/cognis-digital/flakefinder.git"
+   ```
+
+2. **Analyze** a CI-history file (`.json`, `.jsonl`, or `.csv` of test runs). This is the primary command:
+
+   ```bash
+   flakefinder analyze ci-history.jsonl
+   ```
+
+3. **Tune the gate** — only quarantine tests at/above a flakiness score, and require a minimum number of runs before scoring:
+
+   ```bash
+   flakefinder analyze ci-history.jsonl --threshold 60 --min-runs 5
+   ```
+
+4. **Read the output** — `flakefinder` exits `0` when no flaky tests are found and `2` when flaky tests are detected (so it can fail a pipeline). Emit JSON for machines, or just the quarantine list:
+
+   ```bash
+   flakefinder analyze ci-history.jsonl --format json > flaky.json
+   flakefinder quarantine ci-history.jsonl > quarantine.txt   # one test id per line
+   ```
+
+5. **Wire into CI** — let the exit code gate the build:
+
+   ```yaml
+   - run: flakefinder analyze artifacts/ci-history.jsonl --threshold 50
+     # exit 2 => flaky tests detected => job fails
+   ```
+
 ## Contents
 
 - [Why flakefinder?](#why) · [Features](#features) · [Quick start](#quick-start) · [Example](#example) · [Architecture](#architecture) · [AI stack](#ai-stack) · [How it compares](#how-it-compares) · [Integrations](#integrations) · [Install anywhere](#install-anywhere) · [Related](#related) · [Contributing](#contributing)
