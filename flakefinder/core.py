@@ -150,8 +150,17 @@ def load_runs(path: str) -> list[TestRun]:
     """
     if not os.path.exists(path):
         raise FlakeFinderError(f"input file not found: {path}")
-    with open(path, "r", encoding="utf-8") as fh:
-        text = fh.read()
+    try:
+        with open(path, "r", encoding="utf-8") as fh:
+            text = fh.read()
+    except PermissionError:
+        raise FlakeFinderError(f"permission denied reading: {path}") from None
+    except OSError as exc:
+        raise FlakeFinderError(f"cannot read {path}: {exc}") from exc
+    except UnicodeDecodeError:
+        raise FlakeFinderError(
+            f"file is not valid UTF-8 text: {path}"
+        ) from None
     ext = os.path.splitext(path)[1].lower()
 
     records: list[dict[str, Any]]
@@ -202,8 +211,8 @@ def _looks_jsonl(text: str) -> bool:
     if not stripped.startswith("{"):
         return False
     # Multiple top-level objects on separate lines => JSONL.
-    lines = [l for l in text.splitlines() if l.strip()]
-    return len(lines) > 1 and all(l.strip().startswith("{") for l in lines[:3])
+    lines = [ln for ln in text.splitlines() if ln.strip()]
+    return len(lines) > 1 and all(ln.strip().startswith("{") for ln in lines[:3])
 
 
 def flakiness_score(passes: int, fails: int, flips: int, divergence: int, total: int) -> float:
@@ -236,14 +245,28 @@ def flakiness_score(passes: int, fails: int, flips: int, divergence: int, total:
     return min(base + diverge_bonus, 100.0)
 
 
-def analyze(runs: Iterable[TestRun], threshold: float = 50.0, min_runs: int = 3) -> FlakeReport:
+def analyze(
+    runs: Iterable[TestRun],
+    threshold: float = 50.0,
+    min_runs: int = 3,
+) -> FlakeReport:
     """Group runs by test and produce a FlakeReport.
 
     Runs are assumed to be in chronological order as provided; flips are counted
     over that order. Tests with fewer than ``min_runs`` executions are reported
     only if they show same-commit divergence (which needs no history depth).
     """
+    if not (0.0 <= threshold <= 100.0):
+        raise FlakeFinderError(
+            f"threshold must be between 0 and 100 (got {threshold})"
+        )
+    if min_runs < 1:
+        raise FlakeFinderError(
+            f"min-runs must be at least 1 (got {min_runs})"
+        )
     runs = list(runs)
+    if not runs:
+        return FlakeReport(total_runs=0, total_tests=0, threshold=threshold)
     by_test: dict[str, list[TestRun]] = {}
     for r in runs:
         if r.outcome == "ignore":

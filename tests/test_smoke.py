@@ -98,8 +98,92 @@ class TestCli(unittest.TestCase):
         self.assertEqual(rc, cli.EXIT_USAGE)
 
     def test_high_threshold_no_quarantine_but_still_flaky(self):
-        rc = cli.main(["quarantine", DEMO, "--threshold", "101"])
+        # threshold=100 is the maximum valid value; nothing scores above 100 so
+        # quarantine list is empty => EXIT_OK, but flaky tests are still found.
+        rc = cli.main(["quarantine", DEMO, "--threshold", "100"])
         self.assertEqual(rc, cli.EXIT_OK)
+
+    def test_threshold_out_of_range_is_usage_error(self):
+        # threshold > 100 is rejected; argparse.error() raises SystemExit(2).
+        with self.assertRaises(SystemExit) as cm:
+            cli.main(["analyze", DEMO, "--threshold", "101"])
+        self.assertNotEqual(cm.exception.code, 0)
+
+    def test_threshold_negative_is_usage_error(self):
+        with self.assertRaises(SystemExit) as cm:
+            cli.main(["analyze", DEMO, "--threshold", "-1"])
+        self.assertNotEqual(cm.exception.code, 0)
+
+    def test_min_runs_zero_is_usage_error(self):
+        with self.assertRaises(SystemExit) as cm:
+            cli.main(["analyze", DEMO, "--min-runs", "0"])
+        self.assertNotEqual(cm.exception.code, 0)
+
+
+class TestCoreEdgeCases(unittest.TestCase):
+    def test_analyze_empty_runs_returns_empty_report(self):
+        from flakefinder.core import TestRun
+        report = analyze([], threshold=50.0)
+        self.assertEqual(report.total_runs, 0)
+        self.assertEqual(report.total_tests, 0)
+        self.assertEqual(report.flaky_tests, [])
+
+    def test_analyze_all_ignored_outcomes(self):
+        from flakefinder.core import TestRun
+        runs = [
+            TestRun(test="t1", outcome="ignore"),
+            TestRun(test="t1", outcome="ignore"),
+        ]
+        report = analyze(runs, threshold=50.0)
+        self.assertEqual(report.flaky_tests, [])
+
+    def test_load_runs_missing_file_raises(self):
+        from flakefinder.core import FlakeFinderError
+        with self.assertRaises(FlakeFinderError) as cm:
+            load_runs("/nonexistent/path/data.jsonl")
+        self.assertIn("not found", str(cm.exception))
+
+    def test_load_runs_malformed_jsonl_raises(self):
+        import tempfile, os
+        from flakefinder.core import FlakeFinderError
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".jsonl", delete=False, encoding="utf-8"
+        ) as f:
+            f.write('{"test": "t1", "outcome": "pass"}\n')
+            f.write("NOT JSON\n")
+            fname = f.name
+        try:
+            with self.assertRaises(FlakeFinderError) as cm:
+                load_runs(fname)
+            self.assertIn("bad JSONL", str(cm.exception))
+        finally:
+            os.unlink(fname)
+
+    def test_load_runs_empty_file_raises(self):
+        import tempfile, os
+        from flakefinder.core import FlakeFinderError
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".jsonl", delete=False, encoding="utf-8"
+        ) as f:
+            fname = f.name
+        try:
+            with self.assertRaises(FlakeFinderError) as cm:
+                load_runs(fname)
+            self.assertIn("no usable", str(cm.exception))
+        finally:
+            os.unlink(fname)
+
+    def test_analyze_threshold_out_of_range_raises(self):
+        from flakefinder.core import FlakeFinderError, TestRun
+        runs = [TestRun(test="t", outcome="pass")]
+        with self.assertRaises(FlakeFinderError):
+            analyze(runs, threshold=150.0)
+
+    def test_analyze_min_runs_zero_raises(self):
+        from flakefinder.core import FlakeFinderError, TestRun
+        runs = [TestRun(test="t", outcome="pass")]
+        with self.assertRaises(FlakeFinderError):
+            analyze(runs, min_runs=0)
 
 
 if __name__ == "__main__":

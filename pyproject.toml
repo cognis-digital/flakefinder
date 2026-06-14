@@ -32,3 +32,10 @@ flakefinder = "flakefinder.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["flakefinder"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F"]
+ignore = ["E501"]

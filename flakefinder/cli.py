@@ -120,13 +120,31 @@ def _cmd_quarantine(args: argparse.Namespace) -> int:
     return EXIT_FLAKY if report.quarantine_candidates else EXIT_OK
 
 
+def _validate_args(args: argparse.Namespace, parser: argparse.ArgumentParser) -> None:
+    """Validate argument values that argparse cannot check on its own."""
+    threshold = getattr(args, "threshold", None)
+    if threshold is not None and not (0.0 <= threshold <= 100.0):
+        parser.error(f"--threshold must be between 0 and 100 (got {threshold})")
+    min_runs = getattr(args, "min_runs", None)
+    if min_runs is not None and min_runs < 1:
+        parser.error(f"--min-runs must be at least 1 (got {min_runs})")
+
+
 def main(argv: Optional[list] = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
+    _validate_args(args, parser)
+    func = getattr(args, "func", None)
+    if func is None:  # pragma: no cover — argparse required=True guards this
+        parser.print_help(sys.stderr)
+        return EXIT_USAGE
     try:
-        return args.func(args)
+        return func(args)
     except FlakeFinderError as e:
         print(f"{TOOL_NAME}: error: {e}", file=sys.stderr)
+        return EXIT_USAGE
+    except KeyboardInterrupt:
+        print(f"\n{TOOL_NAME}: interrupted", file=sys.stderr)
         return EXIT_USAGE
 
 
