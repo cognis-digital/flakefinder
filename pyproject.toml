@@ -34,3 +34,6 @@ flakefinder = "flakefinder.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["flakefinder"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
