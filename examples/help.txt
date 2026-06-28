@@ -1,0 +1,14 @@
+$ flakefinder-emit --help
+
+usage: flakefinder [-h] [--version] {analyze,quarantine} ...
+
+Detect flaky tests from CI history and suggest quarantines.
+
+positional arguments:
+  {analyze,quarantine}
+    analyze             full flakiness report
+    quarantine          emit only quarantine candidates
+
+options:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit

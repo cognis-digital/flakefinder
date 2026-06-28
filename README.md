@@ -20,6 +20,60 @@ pip install cognis-flakefinder
 flakefinder scan .            # → prioritized findings in seconds
 ```
 
+
+<!-- cognis:example:start -->
+## 🔎 Example output
+
+Real, reproducible output from the tool — runs offline:
+
+```console
+$ flakefinder-emit --version
+flakefinder 0.1.0
+```
+
+```console
+$ flakefinder-emit --help
+usage: flakefinder [-h] [--version] {analyze,quarantine} ...
+
+Detect flaky tests from CI history and suggest quarantines.
+
+positional arguments:
+  {analyze,quarantine}
+    analyze             full flakiness report
+    quarantine          emit only quarantine candidates
+
+options:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+```
+
+> Blocks above are real `flakefinder` output — reproduce them from a clone.
+
+**Sample result format** _(illustrative values — run on your own data for real findings):_
+
+```
+{
+"findings": [
+    {
+        "id": "1234567890",
+        "title": "Suspicious Network Activity",
+        "description": "Potential malicious activity detected on network segment 192.168.1.0/24.",
+        "severity": "high",
+        "created": "2023-02-15T14:30:00Z"
+    },
+    {
+        "id": "2345678901",
+        "title": "Unusual File Access",
+        "description": "User 'johndoe' accessed file '/path/to/sensitive/data.txt' unexpectedly.",
+        "severity": "medium",
+        "created": "2023-02-15T14:31:00Z"
+    }
+]
+}
+```
+
+<!-- cognis:example:end -->
+
 ## Usage — step by step
 
 1. **Install** the CLI:
